@@ -1,8 +1,14 @@
 defmodule A1NewWeb.Schema do
 use Absinthe.Schema
 
+alias A1New.{Menu, Repo}
+
 query do
-  # <<Ignore this for now>>
+  field :menu_items, list_of(:menu_item) do
+    resolve fn _, _, _ ->
+      {:ok, Repo.all(Menu.Item)}
+    end
+  end
 end
 
 object :menu_item do

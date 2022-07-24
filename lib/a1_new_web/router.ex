@@ -14,16 +14,20 @@ defmodule A1NewWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", A1NewWeb do
-    pipe_through :browser
+  scope "/" do
+    pipe_through :api
+
+    forward "/api", Absinthe.Plug, schema: A1NewWeb.Schema
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: A1NewWeb.Schema, interface: :simple
 
     get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
-  scope "/api", A1NewWeb do
-    pipe_through :api
-  end
+  # scope "/api", A1NewWeb do
+  #   pipe_through :api
+  # end
 
   # Enables LiveDashboard only for development
   #
