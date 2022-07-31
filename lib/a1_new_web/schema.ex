@@ -1,7 +1,7 @@
 defmodule A1NewWeb.Schema do
   use Absinthe.Schema
 
-  alias A1New.{Menu, Repo}
+  # alias A1New.{Menu, Repo}
   alias A1NewWeb.Resolvers
 
   object :menu_item do
@@ -13,18 +13,16 @@ defmodule A1NewWeb.Schema do
   query do
     field :menu_items, list_of(:menu_item),
       description: "The list of the available items in the menu." do
-      arg :matching, :string
-      arg :order, type: sort_order, default_value: :asc
+      arg(:matching, :string)
+      arg(:order, type: :sort_order, default_value: :asc)
 
-      resolve &Resolvers.Menu.menu_items/3
+      resolve(&Resolvers.Menu.menu_items/3)
     end
   end
 
-
-
   enum :sort_order do
-    value :asc
-    value :desc
+    value(:asc)
+    value(:desc)
   end
 
   # mutation do

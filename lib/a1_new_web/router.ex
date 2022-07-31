@@ -21,7 +21,7 @@ defmodule A1NewWeb.Router do
 
     forward "/graphiql", Absinthe.Plug.GraphiQL, schema: A1NewWeb.Schema, interface: :simple
 
-    get "/", PageController, :index
+    # get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
