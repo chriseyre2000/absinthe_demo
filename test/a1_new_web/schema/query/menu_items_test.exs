@@ -41,7 +41,7 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
 
   @query """
   {
-    menuItems(matching: "reu") {
+    menuItems(filter: {name: "reu"}) {
       name
     }
   }
@@ -60,7 +60,7 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
 
   @query """
   {
-    menuItems(matching: 123) {
+    menuItems(filter: 123) {
       name
     }
   }
@@ -74,18 +74,18 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
              ]
            } = json_response(response, 200)
 
-    assert message == "Argument \"matching\" has invalid value 123."
+    assert message == "Argument \"filter\" has invalid value 123."
   end
 
   @query """
-  query($term: String) {
-    menuItems(matching: $term) {
+  query($filter: MenuItemFilter!) {
+    menuItems(filter: $filter) {
       name
     }
   }
   """
 
-  @variables %{"term" => "reu"}
+  @variables %{"filter" => %{"name" => "reu"}}
 
   test "menuItems field returns menu items filtered by name when using a query" do
     response = get(build_conn(), "/api", query: @query, variables: @variables)
@@ -128,4 +128,19 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
       "data" => %{"menuItems" => [%{"name" => "Water"} | _ ]}
     } = json_response(response, 200)
   end
+
+  @query """
+  {
+    menuItems(filter: {category: "Sandwiches", tag: "Vegetarian"}) {
+      name
+    }
+  }
+  """
+  test "menuItems fields returns menuItems filtering with a literal" do
+    response = get(build_conn(), "/api", query: @query)
+    assert %{
+      "data" => %{"menuItems" => [%{"name" => "Vada Pav"}]}
+    } = json_response(response, 200)
+  end
+
 end
