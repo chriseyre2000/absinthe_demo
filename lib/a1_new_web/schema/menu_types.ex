@@ -1,23 +1,6 @@
-defmodule A1NewWeb.Schema do
-  use Absinthe.Schema
-
-  # alias A1New.{Menu, Repo}
+defmodule A1NewWeb.Schema.MenuTypes do
+  use Absinthe.Schema.Notation
   alias A1NewWeb.Resolvers
-
-  scalar :date do
-    parse(fn input ->
-      with %Absinthe.Blueprint.Input.String{value: value} <- input,
-           {:ok, date} <- Date.from_iso8601(value) do
-        {:ok, date}
-      else
-        _ -> :error
-      end
-    end)
-
-    serialize(fn date ->
-      Date.to_iso8601(date)
-    end)
-  end
 
   object :menu_item do
     field :id, :id
@@ -50,28 +33,11 @@ defmodule A1NewWeb.Schema do
     field :added_after, :date
   end
 
-  query do
-    field :menu_items, list_of(:menu_item),
-      description: "The list of the available items in the menu." do
+  object :menu_queries do
+    field :menu_items, list_of(:menu_item) do
       arg(:filter, :menu_item_filter)
       arg(:order, type: :sort_order, default_value: :asc)
-
       resolve(&Resolvers.Menu.menu_items/3)
     end
   end
-
-  enum :sort_order do
-    value(:asc)
-    value(:desc)
-  end
-
-  # mutation do
-  #   @desc "Create a new link"
-  #   field :create_link, :link do
-  #     arg :url, non_null(:string)
-  #     arg :description, non_null(:string)
-
-  #     resolve &NewsResolver.create_link/3
-  #   end
-  # end
 end
