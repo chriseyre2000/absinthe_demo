@@ -5,16 +5,16 @@ defmodule A1NewWeb.Schema do
   alias A1NewWeb.Resolvers
 
   scalar :date do
-    parse fn input ->
+    parse(fn input ->
       case Date.from_iso8601(input.value) do
         {:ok, date} -> {:ok, date}
         _ -> :error
       end
-    end
+    end)
 
-    serialize fn date ->
+    serialize(fn date ->
       Date.to_iso8601(date)
-    end
+    end)
   end
 
   object :menu_item do
@@ -26,7 +26,6 @@ defmodule A1NewWeb.Schema do
 
   @desc "Filtering options for the new menu list"
   input_object :menu_item_filter do
-
     @desc "Matching a name"
     field :name, :string
 
@@ -47,14 +46,13 @@ defmodule A1NewWeb.Schema do
 
     @desc "Added to the menu after this date"
     field :added_after, :date
-
   end
 
   query do
     field :menu_items, list_of(:menu_item),
       description: "The list of the available items in the menu." do
-      arg :filter, :menu_item_filter
-      arg :order, type: :sort_order, default_value: :asc
+      arg(:filter, :menu_item_filter)
+      arg(:order, type: :sort_order, default_value: :asc)
 
       resolve(&Resolvers.Menu.menu_items/3)
     end
