@@ -143,4 +143,32 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
     } = json_response(response, 200)
   end
 
+  @query """
+  query ($filter: MenuItemFilter) {
+    menuItems(filter: $filter) {
+      name
+      addedOn
+    }
+  }
+  """
+
+  @variables %{filter: %{"addedBefore" => "2017-01-20"}}
+  test "minimums are filtered by a custom scalar" do
+    sides = A1New.Repo.get_by!(A1New.Menu.Category, name: "Sides")
+    %A1New.Menu.Item{
+      name: "Garlic Fries",
+      added_on: ~D[2017-01-01],
+      price: 2.50,
+      category: sides,
+    }
+    |> A1New.Repo.insert!
+
+    response = get(build_conn(), "/api", query: @query, variables: @variables)
+
+    assert %{
+      "data" => %{
+        "menuItems" => [%{"name" => "Garlic Fries", "addedOn" => "2017-01-01"}]
+      }
+    } == json_response(response, 200)
+  end
 end

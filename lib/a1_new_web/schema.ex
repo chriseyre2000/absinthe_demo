@@ -4,10 +4,24 @@ defmodule A1NewWeb.Schema do
   # alias A1New.{Menu, Repo}
   alias A1NewWeb.Resolvers
 
+  scalar :date do
+    parse fn input ->
+      case Date.from_iso8601(input.value) do
+        {:ok, date} -> {:ok, date}
+        _ -> :error
+      end
+    end
+
+    serialize fn date ->
+      Date.to_iso8601(date)
+    end
+  end
+
   object :menu_item do
     field :id, :id
     field :name, :string
     field :description, :string
+    field :added_on, :date
   end
 
   @desc "Filtering options for the new menu list"
@@ -27,6 +41,12 @@ defmodule A1NewWeb.Schema do
 
     @desc "Priced below a value"
     field :priced_below, :float
+
+    @desc "Added to the menu before this date"
+    field :added_before, :date
+
+    @desc "Added to the menu after this date"
+    field :added_after, :date
 
   end
 

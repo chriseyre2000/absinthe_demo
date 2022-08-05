@@ -122,8 +122,10 @@ defmodule A1New.Menu do
 
   """
 
-  def list_items(filters) do
-    filters
+  def list_items(args) do
+    IO.puts("These are our arguments #{inspect(args)}")
+
+    args
     |> Enum.reduce(Item, fn
       {:order, order}, query ->
         from q in query, order_by: {^order, :name}
@@ -142,6 +144,10 @@ defmodule A1New.Menu do
         from q in query, where: q.price >= ^price
       {:priced_below, price}, query ->
         from q in query, where: q.price <= ^price
+      {:added_before, date}, query ->
+        from q in query, where: q.added_on <= ^date
+      {:added_after, date}, query ->
+        from q in query, where: q.added_on >= ^date
       {:category, category_name}, query ->
         from q in query,
           join: c in assoc(q, :category),
