@@ -108,9 +108,10 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
   """
   test "menuItems fields returns items descended using literals" do
     response = get(build_conn(), "/api", query: @query)
+
     assert %{
-      "data" => %{"menuItems" => [%{"name" => "Water"} | _ ]}
-    } = json_response(response, 200)
+             "data" => %{"menuItems" => [%{"name" => "Water"} | _]}
+           } = json_response(response, 200)
   end
 
   @query """
@@ -124,9 +125,10 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
   @variables %{"order" => "DESC"}
   test "menuItems fields returns items descended using variables" do
     response = get(build_conn(), "/api", query: @query, variables: @variables)
+
     assert %{
-      "data" => %{"menuItems" => [%{"name" => "Water"} | _ ]}
-    } = json_response(response, 200)
+             "data" => %{"menuItems" => [%{"name" => "Water"} | _]}
+           } = json_response(response, 200)
   end
 
   @query """
@@ -138,9 +140,10 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
   """
   test "menuItems fields returns menuItems filtering with a literal" do
     response = get(build_conn(), "/api", query: @query)
+
     assert %{
-      "data" => %{"menuItems" => [%{"name" => "Vada Pav"}]}
-    } = json_response(response, 200)
+             "data" => %{"menuItems" => [%{"name" => "Vada Pav"}]}
+           } = json_response(response, 200)
   end
 
   @query """
@@ -156,21 +159,22 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
 
   test "minimums are filtered by a custom scalar" do
     sides = A1New.Repo.get_by!(A1New.Menu.Category, name: "Sides")
+
     %A1New.Menu.Item{
       name: "Garlic Fries",
       added_on: ~D[2017-01-01],
       price: 2.50,
-      category: sides,
+      category: sides
     }
-    |> A1New.Repo.insert!
+    |> A1New.Repo.insert!()
 
     response = get(build_conn(), "/api", query: @query, variables: @variables)
 
     assert %{
-      "data" => %{
-        "menuItems" => [%{"name" => "Garlic Fries", "addedOn" => "2017-01-01"}]
-      }
-    } == json_response(response, 200)
+             "data" => %{
+               "menuItems" => [%{"name" => "Garlic Fries", "addedOn" => "2017-01-01"}]
+             }
+           } == json_response(response, 200)
   end
 
   @query """
@@ -186,10 +190,16 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
   test "menuItems filtered by a custom scalar with error" do
     response = get(build_conn(), "/api", query: @query, variables: @variables)
 
-    assert %{"errors" => [
-      %{"locations" => [
-      %{"column" => 13, "line" => 2}], "message" => message}
-    ]} = json_response(response, 200)
+    assert %{
+             "errors" => [
+               %{
+                 "locations" => [
+                   %{"column" => 13, "line" => 2}
+                 ],
+                 "message" => message
+               }
+             ]
+           } = json_response(response, 200)
 
     expected = """
     Argument "filter" has invalid value $filter.
@@ -198,5 +208,4 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
 
     assert expected == message
   end
-
 end
