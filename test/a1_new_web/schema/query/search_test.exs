@@ -1,4 +1,4 @@
-defmodule A1NewWeb.Schema.Query.MenuItemTest do
+defmodule A1NewWeb.Schema.Query.SearchTest do
   use A1NewWeb.ConnCase, async: true
 
   setup do

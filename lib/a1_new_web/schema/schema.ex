@@ -39,6 +39,7 @@ defmodule A1NewWeb.Schema do
   end
 
   query do
+    import_fields(:menu_queries)
     field :search, list_of(:search_result) do
       arg :matching, non_null(:string)
       resolve &Resolvers.Menu.search/3
