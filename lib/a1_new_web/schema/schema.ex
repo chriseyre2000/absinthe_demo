@@ -13,16 +13,6 @@ defmodule A1NewWeb.Schema do
     value(:desc)
   end
 
-  # mutation do
-  #   @desc "Create a new link"
-  #   field :create_link, :link do
-  #     arg :url, non_null(:string)
-  #     arg :description, non_null(:string)
-
-  #     resolve &NewsResolver.create_link/3
-  #   end
-  # end
-
   scalar :date do
     parse(fn input ->
       with %Absinthe.Blueprint.Input.String{value: value} <- input,
@@ -43,6 +33,31 @@ defmodule A1NewWeb.Schema do
     field :search, list_of(:search_result) do
       arg :matching, non_null(:string)
       resolve &Resolvers.Menu.search/3
+    end
+  end
+
+  scalar :decimal do
+    parse fn
+      %{value: value}, _ ->
+        {d,_} = Decimal.parse(value)
+        {:ok, d}
+      _, _ ->
+        :error
+    end
+    serialize &to_string/1
+  end
+
+  input_object :menu_item_input do
+    field :name, non_null(:string)
+    field :description, :string
+    field :price, non_null(:decimal)
+    field :category_id, non_null(:id)
+  end
+
+  mutation do
+    field :create_menu_item, :menu_item do
+      arg :input, non_null(:menu_item_input)
+      resolve &Resolvers.Menu.create_item/3
     end
   end
 
