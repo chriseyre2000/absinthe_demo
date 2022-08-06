@@ -8,8 +8,7 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
   @query """
   query Search($term: String!) {
     search(matching: $term) {
-      ... on MenuItem { name }
-      ... on Category { name }
+      name
       __typename
     }
   }

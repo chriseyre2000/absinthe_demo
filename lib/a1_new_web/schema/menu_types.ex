@@ -1,15 +1,19 @@
 defmodule A1NewWeb.Schema.MenuTypes do
   use Absinthe.Schema.Notation
-  alias A1NewWeb.Resolvers
+
 
   object :menu_item do
+    interfaces [:search_result]
     field :id, :id
     field :name, :string
     field :description, :string
     field :added_on, :date
   end
 
+  alias A1NewWeb.Resolvers
+
   object :category do
+    interfaces [:search_result]
     field :name, :string
     field :description, :string
     field :items, list_of(:menu_item) do

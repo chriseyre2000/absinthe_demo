@@ -1,7 +1,7 @@
 defmodule A1NewWeb.Schema do
   use Absinthe.Schema
   alias A1NewWeb.Resolvers
-  
+
   import_types(__MODULE__.MenuTypes)
 
   # query do
@@ -45,8 +45,8 @@ defmodule A1NewWeb.Schema do
     end
   end
 
-  union :search_result do
-    types [:menu_item, :category]
+  interface :search_result do
+    field :name, :string
     resolve_type fn
       %A1New.Menu.Item{}, _ ->
         :menu_item
