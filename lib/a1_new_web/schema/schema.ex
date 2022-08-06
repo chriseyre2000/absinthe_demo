@@ -1,11 +1,12 @@
 defmodule A1NewWeb.Schema do
   use Absinthe.Schema
-
+  alias A1NewWeb.Resolvers
+  
   import_types(__MODULE__.MenuTypes)
 
-  query do
-    import_fields(:menu_queries)
-  end
+  # query do
+  #   import_fields(:menu_queries)
+  # end
 
   enum :sort_order do
     value(:asc)
@@ -35,5 +36,24 @@ defmodule A1NewWeb.Schema do
     serialize(fn date ->
       Date.to_iso8601(date)
     end)
+  end
+
+  query do
+    field :search, list_of(:search_result) do
+      arg :matching, non_null(:string)
+      resolve &Resolvers.Menu.search/3
+    end
+  end
+
+  union :search_result do
+    types [:menu_item, :category]
+    resolve_type fn
+      %A1New.Menu.Item{}, _ ->
+        :menu_item
+      %A1New.Menu.Category{}, _ ->
+        :category
+      _, _ ->
+        nil
+    end
   end
 end

@@ -9,6 +9,14 @@ defmodule A1NewWeb.Schema.MenuTypes do
     field :added_on, :date
   end
 
+  object :category do
+    field :name, :string
+    field :description, :string
+    field :items, list_of(:menu_item) do
+      resolve &Resolvers.Menu.items_for_category/3
+    end
+  end
+
   @desc "Filtering options for the new menu list"
   input_object :menu_item_filter do
     @desc "Matching a name"
