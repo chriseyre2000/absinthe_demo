@@ -208,6 +208,4 @@ defmodule A1NewWeb.Schema.Query.MenuItemTest do
 
     assert expected == message
   end
-
-  
 end

@@ -19,9 +19,12 @@ defmodule A1New.Schema.Mutation.CreateMenuTest do
   @query """
   mutation ($menuItem: MenuItemInput!) {
     createMenuItem(input: $menuItem) {
-      name
-      description
-      price
+      errors {key message}
+      menuItem {
+        name
+        description
+        price
+      }
     }
   }
   """
@@ -30,22 +33,28 @@ defmodule A1New.Schema.Mutation.CreateMenuTest do
       "name" => "French Dip",
       "description" => "Roast beef, caramelized onions, horseradish, ...",
       "price" => "5.75",
-      "categoryId" => category_id,
+      "categoryId" => category_id
     }
+
     conn = build_conn()
-    conn = post conn, "/api",
-      query: @query,
-      variables: %{"menuItem" => menu_item}
+
+    conn =
+      post conn, "/api",
+        query: @query,
+        variables: %{"menuItem" => menu_item}
 
     assert json_response(conn, 200) == %{
-      "data" => %{
-        "createMenuItem" => %{
-          "name" => menu_item["name"],
-          "description" => menu_item["description"],
-          "price" => menu_item["price"]
-        }
-      }
-    }
+             "data" => %{
+               "createMenuItem" => %{
+                 "errors" => nil,
+                 "menuItem" => %{
+                   "name" => menu_item["name"],
+                   "description" => menu_item["description"],
+                   "price" => menu_item["price"]
+                 }
+               }
+             }
+           }
   end
 
   test "creating a menu item with an existing name fails", %{category_id: category_id} do
@@ -53,24 +62,28 @@ defmodule A1New.Schema.Mutation.CreateMenuTest do
       "name" => "Reuben",
       "description" => "Roast beef, caramelized onions, horseradish...",
       "price" => "5.75",
-      "categoryId" => category_id,
+      "categoryId" => category_id
     }
+
     conn = build_conn()
-    conn = post conn, "/api",
-      query: @query,
-      variables: %{"menuItem" => menu_item}
+
+    conn =
+      post conn, "/api",
+        query: @query,
+        variables: %{"menuItem" => menu_item}
 
     assert json_response(conn, 200) == %{
-      "data" => %{"createMenuItem" => nil},
-      "errors" => [
-        %{
-        "locations" => [%{"column" => 3, "line" => 2}],
-        "message" => "Could not create menu item",
-        "path" => ["createMenuItem"],
-        "details" => %{"name" => ["has already been taken"]}
-        }
-      ]
-    }
-
+             "data" => %{
+               "createMenuItem" => %{
+                 "errors" => [
+                   %{
+                     "message" => "has already been taken",
+                     "key" => "name"
+                   }
+                 ],
+                 "menuItem" => nil
+               }
+             }
+           }
   end
 end

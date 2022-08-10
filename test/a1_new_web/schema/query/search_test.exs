@@ -23,7 +23,5 @@ defmodule A1NewWeb.Schema.Query.SearchTest do
     assert length(results) > 0
     assert Enum.find(results, &(&1["__typename"] == "Category"))
     assert Enum.find(results, &(&1["__typename"] == "MenuItem"))
-
   end
-
 end

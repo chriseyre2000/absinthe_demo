@@ -1,9 +1,13 @@
 defmodule A1NewWeb.Schema.MenuTypes do
   use Absinthe.Schema.Notation
 
+  object :menu_item_result do
+    field :menu_item, :menu_item
+    field :errors, list_of(:input_error)
+  end
 
   object :menu_item do
-    interfaces [:search_result]
+    interfaces([:search_result])
     field :id, :id
     field :name, :string
     field :description, :string
@@ -14,11 +18,12 @@ defmodule A1NewWeb.Schema.MenuTypes do
   alias A1NewWeb.Resolvers
 
   object :category do
-    interfaces [:search_result]
+    interfaces([:search_result])
     field :name, :string
     field :description, :string
+
     field :items, list_of(:menu_item) do
-      resolve &Resolvers.Menu.items_for_category/3
+      resolve(&Resolvers.Menu.items_for_category/3)
     end
   end
 

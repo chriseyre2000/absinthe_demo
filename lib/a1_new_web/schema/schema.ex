@@ -4,9 +4,11 @@ defmodule A1NewWeb.Schema do
 
   import_types(__MODULE__.MenuTypes)
 
-  # query do
-  #   import_fields(:menu_queries)
-  # end
+  @desc "An error occoured trying to persist input"
+  object :input_error do
+    field :key, non_null(:string)
+    field :message, non_null(:string)
+  end
 
   enum :sort_order do
     value(:asc)
@@ -30,21 +32,24 @@ defmodule A1NewWeb.Schema do
 
   query do
     import_fields(:menu_queries)
+
     field :search, list_of(:search_result) do
-      arg :matching, non_null(:string)
-      resolve &Resolvers.Menu.search/3
+      arg(:matching, non_null(:string))
+      resolve(&Resolvers.Menu.search/3)
     end
   end
 
   scalar :decimal do
-    parse fn
+    parse(fn
       %{value: value}, _ ->
-        {d,_} = Decimal.parse(value)
+        {d, _} = Decimal.parse(value)
         {:ok, d}
+
       _, _ ->
         :error
-    end
-    serialize &to_string/1
+    end)
+
+    serialize(&to_string/1)
   end
 
   input_object :menu_item_input do
@@ -55,21 +60,24 @@ defmodule A1NewWeb.Schema do
   end
 
   mutation do
-    field :create_menu_item, :menu_item do
-      arg :input, non_null(:menu_item_input)
-      resolve &Resolvers.Menu.create_item/3
+    field :create_menu_item, :menu_item_result do
+      arg(:input, non_null(:menu_item_input))
+      resolve(&Resolvers.Menu.create_item/3)
     end
   end
 
   interface :search_result do
     field :name, :string
-    resolve_type fn
+
+    resolve_type(fn
       %A1New.Menu.Item{}, _ ->
         :menu_item
+
       %A1New.Menu.Category{}, _ ->
         :category
+
       _, _ ->
         nil
-    end
+    end)
   end
 end

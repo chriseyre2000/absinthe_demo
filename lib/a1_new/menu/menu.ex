@@ -252,7 +252,9 @@ defmodule A1New.Menu do
   end
 
   defp search_ecto(ecto_schema, pattern) do
-    Repo.all from q in ecto_schema,
-      where: ilike(q.name, ^pattern) or ilike(q.description, ^pattern)
+    Repo.all(
+      from q in ecto_schema,
+        where: ilike(q.name, ^pattern) or ilike(q.description, ^pattern)
+    )
   end
 end
